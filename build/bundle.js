@@ -69,12 +69,140 @@
 	    });
 	});
 
-	app.controller('mainController', function($scope) {
+	app.controller('mainController', function($scope, $timeout) {
 	  $scope.test = 'yo yo yo';
+
+	  $timeout(function() {
+	    onLoad();
+	  }, 100);
+	  // onLoad();
+
+	  //header code
+	  var refreshDuration = 3000;
+	  var refreshTimeout;
+	  var numPointsX;
+	  var numPointsY;
+	  var unitWidth;
+	  var unitHeight;
+	  var points;
+
+	  function onLoad() {
+	      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+	      svg.setAttribute('width',window.innerWidth);
+	      svg.setAttribute('height',window.innerHeight);
+	      document.querySelector('#header').appendChild(svg);
+
+	      var unitSize = (window.innerWidth+window.innerHeight)/20;
+	      numPointsX = Math.ceil(window.innerWidth/unitSize)+1;
+	      numPointsY = Math.ceil(window.innerHeight/unitSize)+1;
+	      unitWidth = Math.ceil(window.innerWidth/(numPointsX-1));
+	      unitHeight = Math.ceil(window.innerHeight/(numPointsY-1));
+
+	      points = [];
+
+	      for(var y = 0; y < numPointsY; y++) {
+	          for(var x = 0; x < numPointsX; x++) {
+	              points.push({x:unitWidth*x, y:unitHeight*y, originX:unitWidth*x, originY:unitHeight*y});
+	          }
+	      }
+
+	      randomize();
+
+	      for (var i = 0; i < points.length; i++) {
+	          if(points[i].originX != unitWidth*(numPointsX-1) && points[i].originY != unitHeight*(numPointsY-1)) {
+	              var topLeftX = points[i].x;
+	              var topLeftY = points[i].y;
+	              var topRightX = points[i+1].x;
+	              var topRightY = points[i+1].y;
+	              var bottomLeftX = points[i+numPointsX].x;
+	              var bottomLeftY = points[i+numPointsX].y;
+	              var bottomRightX = points[i+numPointsX+1].x;
+	              var bottomRightY = points[i+numPointsX+1].y;
+
+	              var rando = Math.floor(Math.random()*2);
+
+	              for(var n = 0; n < 2; n++) {
+	                  var polygon = document.createElementNS(svg.namespaceURI, 'polygon');
+
+	                  if(rando==0) {
+	                      if(n==0) {
+	                          polygon.point1 = i;
+	                          polygon.point2 = i+numPointsX;
+	                          polygon.point3 = i+numPointsX+1;
+	                          polygon.setAttribute('points',topLeftX+','+topLeftY+' '+bottomLeftX+','+bottomLeftY+' '+bottomRightX+','+bottomRightY);
+	                      } else if(n==1) {
+	                          polygon.point1 = i;
+	                          polygon.point2 = i+1;
+	                          polygon.point3 = i+numPointsX+1;
+	                          polygon.setAttribute('points',topLeftX+','+topLeftY+' '+topRightX+','+topRightY+' '+bottomRightX+','+bottomRightY);
+	                      }
+	                  } else if(rando==1) {
+	                      if(n==0) {
+	                          polygon.point1 = i;
+	                          polygon.point2 = i+numPointsX;
+	                          polygon.point3 = i+1;
+	                          polygon.setAttribute('points',topLeftX+','+topLeftY+' '+bottomLeftX+','+bottomLeftY+' '+topRightX+','+topRightY);
+	                      } else if(n==1) {
+	                          polygon.point1 = i+numPointsX;
+	                          polygon.point2 = i+1;
+	                          polygon.point3 = i+numPointsX+1;
+	                          polygon.setAttribute('points',bottomLeftX+','+bottomLeftY+' '+topRightX+','+topRightY+' '+bottomRightX+','+bottomRightY);
+	                      }
+	                  }
+	                  polygon.setAttribute('fill','rgba(0,0,0,'+(Math.random()/3)+')');
+	                  var animate = document.createElementNS('http://www.w3.org/2000/svg','animate');
+	                  animate.setAttribute('fill','freeze');
+	                  animate.setAttribute('attributeName','points');
+	                  animate.setAttribute('dur',refreshDuration+'ms');
+	                  animate.setAttribute('calcMode','linear');
+	                  polygon.appendChild(animate);
+	                  svg.appendChild(polygon);
+	              }
+	          }
+	      }
+	      refresh();
+	  }
+
+	  function randomize() {
+	      for(var i = 0; i < points.length; i++) {
+	          if(points[i].originX != 0 && points[i].originX != unitWidth*(numPointsX-1)) {
+	              points[i].x = points[i].originX + Math.random()*unitWidth-unitWidth/2;
+	          }
+	          if(points[i].originY != 0 && points[i].originY != unitHeight*(numPointsY-1)) {
+	              points[i].y = points[i].originY + Math.random()*unitHeight-unitHeight/2;
+	          }
+	      }
+	  }
+
+	  function refresh() {
+	      randomize();
+	      for(var i = 0; i < document.querySelector('#header svg').childNodes.length; i++) {
+	          var polygon = document.querySelector('#header svg').childNodes[i];
+	          var animate = polygon.childNodes[0];
+	          if(animate.getAttribute('to')) {
+	              animate.setAttribute('from',animate.getAttribute('to'));
+	          }
+	          animate.setAttribute('to',points[polygon.point1].x+','+points[polygon.point1].y+' '+points[polygon.point2].x+','+points[polygon.point2].y+' '+points[polygon.point3].x+','+points[polygon.point3].y);
+	          animate.beginElement();
+	      }
+	      refreshTimeout = $timeout(function() {refresh();}, refreshDuration);
+	  }
+
+	  function onResize() {
+	      document.querySelector('#header svg').remove();
+	      clearTimeout(refreshTimeout);
+	      onLoad();
+	  }
+
+	  window.onresize = onResize;
+	  //end header code
 	});
 
 	// sections
-	// require('./components/')
+	__webpack_require__(6)(app);
+
+
+	  
 
 /***/ },
 /* 1 */
@@ -43987,6 +44115,21 @@
 	angular.module('ui.bootstrap.tooltip').run(function() {!angular.$$csp().noInlineStyle && !angular.$$uibTooltipCss && angular.element(document).find('head').prepend('<style type="text/css">[uib-tooltip-popup].tooltip.top-left > .tooltip-arrow,[uib-tooltip-popup].tooltip.top-right > .tooltip-arrow,[uib-tooltip-popup].tooltip.bottom-left > .tooltip-arrow,[uib-tooltip-popup].tooltip.bottom-right > .tooltip-arrow,[uib-tooltip-popup].tooltip.left-top > .tooltip-arrow,[uib-tooltip-popup].tooltip.left-bottom > .tooltip-arrow,[uib-tooltip-popup].tooltip.right-top > .tooltip-arrow,[uib-tooltip-popup].tooltip.right-bottom > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.top-left > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.top-right > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.bottom-left > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.bottom-right > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.left-top > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.left-bottom > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.right-top > .tooltip-arrow,[uib-tooltip-html-popup].tooltip.right-bottom > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.top-left > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.top-right > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.bottom-left > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.bottom-right > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.left-top > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.left-bottom > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.right-top > .tooltip-arrow,[uib-tooltip-template-popup].tooltip.right-bottom > .tooltip-arrow,[uib-popover-popup].popover.top-left > .arrow,[uib-popover-popup].popover.top-right > .arrow,[uib-popover-popup].popover.bottom-left > .arrow,[uib-popover-popup].popover.bottom-right > .arrow,[uib-popover-popup].popover.left-top > .arrow,[uib-popover-popup].popover.left-bottom > .arrow,[uib-popover-popup].popover.right-top > .arrow,[uib-popover-popup].popover.right-bottom > .arrow,[uib-popover-html-popup].popover.top-left > .arrow,[uib-popover-html-popup].popover.top-right > .arrow,[uib-popover-html-popup].popover.bottom-left > .arrow,[uib-popover-html-popup].popover.bottom-right > .arrow,[uib-popover-html-popup].popover.left-top > .arrow,[uib-popover-html-popup].popover.left-bottom > .arrow,[uib-popover-html-popup].popover.right-top > .arrow,[uib-popover-html-popup].popover.right-bottom > .arrow,[uib-popover-template-popup].popover.top-left > .arrow,[uib-popover-template-popup].popover.top-right > .arrow,[uib-popover-template-popup].popover.bottom-left > .arrow,[uib-popover-template-popup].popover.bottom-right > .arrow,[uib-popover-template-popup].popover.left-top > .arrow,[uib-popover-template-popup].popover.left-bottom > .arrow,[uib-popover-template-popup].popover.right-top > .arrow,[uib-popover-template-popup].popover.right-bottom > .arrow{top:auto;bottom:auto;left:auto;right:auto;margin:0;}[uib-popover-popup].popover,[uib-popover-html-popup].popover,[uib-popover-template-popup].popover{display:block !important;}</style>'); angular.$$uibTooltipCss = true; });
 	angular.module('ui.bootstrap.timepicker').run(function() {!angular.$$csp().noInlineStyle && !angular.$$uibTimepickerCss && angular.element(document).find('head').prepend('<style type="text/css">.uib-time input{width:50px;}</style>'); angular.$$uibTimepickerCss = true; });
 	angular.module('ui.bootstrap.typeahead').run(function() {!angular.$$csp().noInlineStyle && !angular.$$uibTypeaheadCss && angular.element(document).find('head').prepend('<style type="text/css">[uib-typeahead-popup].dropdown-menu{display:block;}</style>'); angular.$$uibTypeaheadCss = true; });
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	module.exports = function(app) {
+	  app.directive('header', function() {
+	    return {
+	      restrict: 'A',
+	      replace: true,
+	      templateUrl: './partials/header.tpl.html',
+	      controller: 'mainController'
+	    }
+	  });
+	};
 
 /***/ }
 /******/ ]);

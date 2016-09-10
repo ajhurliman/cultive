@@ -17,3 +17,9 @@
 body {
   background-color: #656565;
   font-family: Arial, Helvetica, sans-serif; }
+
+/*header stuff*/
+.header {
+  height: 350px;
+  background: radial-gradient(ellipse at center, #feda3e 0%, #3d3100 100%);
+  overflow: hidden; }
