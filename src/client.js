@@ -24,10 +24,13 @@ app.config(function($urlRouterProvider, $stateProvider) {
 });
 
 app.controller('mainController', function($scope, $timeout) {
-  $scope.test = 'yo yo yo';
+  $scope.loaded = false;
 
   $timeout(function() {
-    onLoad();
+    if ($scope.loaded === false) {
+      $scope.loaded = true;
+      onLoad();
+    }
   }, 100);
   // onLoad();
 
@@ -41,6 +44,7 @@ app.controller('mainController', function($scope, $timeout) {
   var points;
 
   function onLoad() {
+    if ($scope.loaded) {
       var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       svg.setAttribute('width',window.innerWidth);
       svg.setAttribute('height',window.innerHeight);
@@ -54,14 +58,17 @@ app.controller('mainController', function($scope, $timeout) {
 
       points = [];
 
+      //create a grid of points
       for(var y = 0; y < numPointsY; y++) {
           for(var x = 0; x < numPointsX; x++) {
               points.push({x:unitWidth*x, y:unitHeight*y, originX:unitWidth*x, originY:unitHeight*y});
           }
       }
 
+      //jostle the non-edge points a little bit
       randomize();
 
+      //create polygons by connecting the points
       for (var i = 0; i < points.length; i++) {
           if(points[i].originX != unitWidth*(numPointsX-1) && points[i].originY != unitHeight*(numPointsY-1)) {
               var topLeftX = points[i].x;
@@ -115,9 +122,12 @@ app.controller('mainController', function($scope, $timeout) {
           }
       }
       refresh();
+    }
   }
 
+  // jostles the points a little bit from their origin spot in the grid
   function randomize() {
+    if ($scope.loaded) {
       for(var i = 0; i < points.length; i++) {
           if(points[i].originX != 0 && points[i].originX != unitWidth*(numPointsX-1)) {
               points[i].x = points[i].originX + Math.random()*unitWidth-unitWidth/2;
@@ -126,9 +136,11 @@ app.controller('mainController', function($scope, $timeout) {
               points[i].y = points[i].originY + Math.random()*unitHeight-unitHeight/2;
           }
       }
+    }
   }
 
   function refresh() {
+    if ($scope.loaded) {
       randomize();
       for(var i = 0; i < document.querySelector('#header svg').childNodes.length; i++) {
           var polygon = document.querySelector('#header svg').childNodes[i];
@@ -140,12 +152,15 @@ app.controller('mainController', function($scope, $timeout) {
           animate.beginElement();
       }
       refreshTimeout = $timeout(function() {refresh();}, refreshDuration);
+    }
   }
 
   function onResize() {
+    if ($scope.loaded) {
       document.querySelector('#header svg').remove();
       clearTimeout(refreshTimeout);
       onLoad();
+    }
   }
 
   window.onresize = onResize;
@@ -154,6 +169,8 @@ app.controller('mainController', function($scope, $timeout) {
 
 // sections
 require('./components/header')(app);
-
-
+require('./components/offerings')(app);
+require('./components/about')(app);
+require('./components/reviews')(app);
+require('./components/footer')(app);
   

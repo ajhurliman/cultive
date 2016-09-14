@@ -70,10 +70,13 @@
 	});
 
 	app.controller('mainController', function($scope, $timeout) {
-	  $scope.test = 'yo yo yo';
+	  $scope.loaded = false;
 
 	  $timeout(function() {
-	    onLoad();
+	    if ($scope.loaded === false) {
+	      $scope.loaded = true;
+	      onLoad();
+	    }
 	  }, 100);
 	  // onLoad();
 
@@ -87,6 +90,7 @@
 	  var points;
 
 	  function onLoad() {
+	    if ($scope.loaded) {
 	      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 	      svg.setAttribute('width',window.innerWidth);
 	      svg.setAttribute('height',window.innerHeight);
@@ -100,14 +104,17 @@
 
 	      points = [];
 
+	      //create a grid of points
 	      for(var y = 0; y < numPointsY; y++) {
 	          for(var x = 0; x < numPointsX; x++) {
 	              points.push({x:unitWidth*x, y:unitHeight*y, originX:unitWidth*x, originY:unitHeight*y});
 	          }
 	      }
 
+	      //jostle the non-edge points a little bit
 	      randomize();
 
+	      //create polygons by connecting the points
 	      for (var i = 0; i < points.length; i++) {
 	          if(points[i].originX != unitWidth*(numPointsX-1) && points[i].originY != unitHeight*(numPointsY-1)) {
 	              var topLeftX = points[i].x;
@@ -161,9 +168,12 @@
 	          }
 	      }
 	      refresh();
+	    }
 	  }
 
+	  // jostles the points a little bit from their origin spot in the grid
 	  function randomize() {
+	    if ($scope.loaded) {
 	      for(var i = 0; i < points.length; i++) {
 	          if(points[i].originX != 0 && points[i].originX != unitWidth*(numPointsX-1)) {
 	              points[i].x = points[i].originX + Math.random()*unitWidth-unitWidth/2;
@@ -172,9 +182,11 @@
 	              points[i].y = points[i].originY + Math.random()*unitHeight-unitHeight/2;
 	          }
 	      }
+	    }
 	  }
 
 	  function refresh() {
+	    if ($scope.loaded) {
 	      randomize();
 	      for(var i = 0; i < document.querySelector('#header svg').childNodes.length; i++) {
 	          var polygon = document.querySelector('#header svg').childNodes[i];
@@ -186,12 +198,15 @@
 	          animate.beginElement();
 	      }
 	      refreshTimeout = $timeout(function() {refresh();}, refreshDuration);
+	    }
 	  }
 
 	  function onResize() {
+	    if ($scope.loaded) {
 	      document.querySelector('#header svg').remove();
 	      clearTimeout(refreshTimeout);
 	      onLoad();
+	    }
 	  }
 
 	  window.onresize = onResize;
@@ -200,8 +215,10 @@
 
 	// sections
 	__webpack_require__(6)(app);
-
-
+	__webpack_require__(7)(app);
+	__webpack_require__(8)(app);
+	__webpack_require__(9)(app);
+	__webpack_require__(10)(app);
 	  
 
 /***/ },
@@ -44120,12 +44137,72 @@
 /* 6 */
 /***/ function(module, exports) {
 
-	module.exports = function(app) {
+	module.exports = function header(app) {
 	  app.directive('header', function() {
 	    return {
 	      restrict: 'A',
 	      replace: true,
 	      templateUrl: './partials/header.tpl.html',
+	      controller: 'mainController'
+	    }
+	  });
+	};
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	module.exports = function offerings(app) {
+	  app.directive('offerings', function() {
+	    return {
+	      restrict: 'A',
+	      replace: true,
+	      templateUrl: './partials/offerings.tpl.html',
+	      controller: 'mainController'
+	    }
+	  });
+	};
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	module.exports = function about(app) {
+	  app.directive('about', function() {
+	    return {
+	      restrict: 'A',
+	      replace: true,
+	      templateUrl: './partials/about.tpl.html',
+	      controller: 'mainController'
+	    }
+	  });
+	};
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	module.exports = function(app) {
+	  app.directive('reviews', function() {
+	    return {
+	      restrict: 'A',
+	      replace: true,
+	      templateUrl: './partials/reviews.tpl.html',
+	      controller: 'mainController'
+	    }
+	  });
+	};
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	module.exports = function(app) {
+	  app.directive('footer', function() {
+	    return {
+	      restrict: 'A',
+	      replace: true,
+	      templateUrl: './partials/footer.tpl.html',
 	      controller: 'mainController'
 	    }
 	  });

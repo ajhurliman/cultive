@@ -22,4 +22,58 @@ body {
 .header {
   height: 350px;
   background: radial-gradient(ellipse at center, #feda3e 0%, #3d3100 100%);
-  overflow: hidden; }
+  overflow: hidden;
+  position: relative; }
+
+.section-title {
+  margin: 20px 0 75px 0;
+  text-align: center; }
+
+.cultive-panel {
+  padding: 40px 0; }
+
+#header-overlay {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%; }
+  #header-overlay h1 {
+    font-family: Futura;
+    font-size: 95px;
+    letter-spacing: 20px; }
+
+.offerings {
+  /*background-color: #2C3E50;*/
+  background-color: #ebebeb; }
+  .offerings h1, .offerings h2 {
+    /*color: white;*/
+    text-align: center; }
+  .offerings .offering-icon {
+    height: 150px;
+    width: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto; }
+  .offerings .offerings-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-around; }
+
+.about {
+  background-color: #323232;
+  color: white; }
+  .about .section-title {
+    color: white; }
+
+/*#cc6698,
+  #0869ad,
+  #ff8300,
+  #7A86b8,
+  #f05133,
+  #2aa9e0,
+  #71bf45,
+  #ef0e39,
+  #9e79d7,*/
+/*other color choices besides yellow*/
