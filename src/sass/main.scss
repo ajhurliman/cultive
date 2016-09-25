@@ -1,6 +1,6 @@
 $screen-sm: 320px;
-$screen-md: 680px;
-$screen-lg: 1000px;
+$screen-md: 768px;
+$screen-lg: 920px;
 $background-color: rgb(115,115,115);
 /*$background-color: rgb(235,235,235);*/
 
@@ -16,7 +16,7 @@ $background-color: rgb(115,115,115);
     /*padding: 0px 20px 20px 20px;  */
   }
   @media (min-width: $screen-lg) {
-    width: 1000px;
+    width: 920px;
     /*padding-bottom: 20px;*/
   }
 }
@@ -48,7 +48,7 @@ $color: nth($colors, random(length($colors)));
 }
 
 .cultive-panel {
-  padding: 40px 0 15px 0;
+  padding: 40px 0 80px 0;
   background-color: $background-color
 }
 
@@ -102,8 +102,14 @@ $color: nth($colors, random(length($colors)));
 
   .offering {
     padding: 20px;
-    margin: 0 10px;
     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAGUlEQVQIW2P8f53hP6MmAyMDAwOEgAEUDgBtyQMEgZ9OmQAAAABJRU5ErkJggg==);
+  
+    @media (min-width: 1px) {
+      margin: 10px 10px;
+    }
+    @media (min-width: $screen-md) {
+      margin: 0 10px;
+    }
   }
 
 }
@@ -146,6 +152,13 @@ $color: nth($colors, random(length($colors)));
     padding: 20px;
     margin: 0 10px;
     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAGUlEQVQIW2P8f53hP6MmAyMDAwOEgAEUDgBtyQMEgZ9OmQAAAABJRU5ErkJggg==);
+  
+    @media (min-width: 1px) {
+      margin: 10px 10px;
+    }
+    @media (min-width: $screen-md) {
+      margin: 0 10px;
+    }
   }
 
   .quote {
@@ -173,6 +186,11 @@ $color: nth($colors, random(length($colors)));
 .footer {
   .footer-text, a {
     text-align: center;
+
+    strong {
+      color: white;
+      margin-bottom: 5px;
+    }
   }
 
   a {
@@ -180,11 +198,17 @@ $color: nth($colors, random(length($colors)));
   }
 
   .social-container {
+    margin-top: 10px;
     display: flex;
     justify-content: center;
   }
   .social-icon {
     display: inline-block;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    margin-left: 10px;
+    cursor: pointer;
   }
 }
 
